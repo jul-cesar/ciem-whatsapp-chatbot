@@ -2,6 +2,9 @@
   "name": "hono",
   "type": "module",
   "dependencies": {
+    "@chat-adapter/state-pg": "^4.20.1",
+    "@chat-adapter/whatsapp": "^4.20.1",
+    "chat": "^4.20.1",
     "hono": "^4.12.7"
   },
   "devDependencies": {

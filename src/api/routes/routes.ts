@@ -5,8 +5,7 @@ export const routes = new Hono()
 routes.get('/', (c) => {
   return c.json({
     ok: true,
-    message: 'Hello Hono!',
-    docs: 'https://vercel.com/docs/frameworks/backend/hono'
+    message: 'CIEM API',
   })
 })
 

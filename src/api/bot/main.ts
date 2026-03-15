@@ -9,5 +9,5 @@ export const bot = new Chat({
     whatsapp: createWhatsAppAdapter(),
   },
   state: createPostgresState()
-}).registerSingleton()
+})
 

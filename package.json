@@ -2,8 +2,11 @@
   "name": "hono",
   "type": "module",
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.41",
     "@chat-adapter/state-pg": "^4.20.1",
     "@chat-adapter/whatsapp": "^4.20.1",
+    "@vercel/functions": "^3.4.3",
+    "ai": "^6.0.116",
     "chat": "^4.20.1",
     "hono": "^4.12.7"
   },

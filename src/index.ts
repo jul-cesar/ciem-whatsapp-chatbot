@@ -11,8 +11,12 @@ app.route('/webhooks', webhooks)
   
 
 const bot = Chat.getSingleton()
+await bot.initialize()
 
-bot.onDirectMessage(async (thread, message) => {
+
+
+
+bot.onNewMention(async (thread, message) => {
   await thread.post("Hello from WhatsApp!");
 });
 

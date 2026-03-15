@@ -11,13 +11,11 @@ async function ensureInitialized() {
   if (!initialized) {
     await bot.initialize();
 
-    // Primer mensaje en un thread nuevo (no suscrito)
     bot.onDirectMessage(async (thread, message) => {
       await thread.subscribe();
       await handleMessage(thread, message);
     });
 
-    // Mensajes siguientes en threads ya suscritos
     bot.onSubscribedMessage(async (thread, message) => {
       await handleMessage(thread, message);
     });
@@ -33,16 +31,20 @@ async function handleMessage(
   try {
     await thread.startTyping();
 
-    // Construir historial de conversación desde el thread
+    // Construir historial desde mensajes persistidos (sin incluir el actual)
     const history: Array<{ role: "user" | "assistant"; content: string }> = [];
     for await (const msg of thread.messages) {
+      // Saltar el mensaje actual, lo agregamos aparte al final
+      if (msg.id === message.id) continue;
       history.push({
         role: msg.author.isMe ? "assistant" : "user",
         content: msg.text,
       });
     }
-    // thread.messages viene en orden más reciente primero, invertir
     history.reverse();
+
+    // Agregar el mensaje actual del usuario al final (siempre presente)
+    history.push({ role: "user", content: message.text });
 
     const { text } = await generateText({
       model: openai("gpt-4o-mini"),

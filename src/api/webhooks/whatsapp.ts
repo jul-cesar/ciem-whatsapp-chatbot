@@ -63,8 +63,8 @@ async function handleMessage(
       });
     }
 
-    // Mejora 1: Limitar historial a los últimos MAX_HISTORY mensajes
-    const history = allMessages.reverse().slice(-MAX_HISTORY);
+    // Limitar historial a los últimos MAX_HISTORY mensajes (en orden cronológico)
+    const history = allMessages.slice(-MAX_HISTORY);
 
     // Mejora 2: Mensaje de bienvenida si es el primer mensaje del usuario
     if (history.length === 0) {

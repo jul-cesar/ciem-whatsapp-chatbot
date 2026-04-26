@@ -1,4 +1,4 @@
-const SCOPES = ["https://www.googleapis.com/auth/calendar"];
+const SCOPES = "https://www.googleapis.com/auth/calendar";
 
 const getServiceAccount = (): {
   type: string;
@@ -39,7 +39,7 @@ async function getAccessToken(): Promise<string> {
   const header = { alg: "RS256", typ: "JWT" };
   const payload = {
     iss: sa.client_email,
-    scope: SCOPES.join(" "),
+    scope: SCOPES,
     aud: "https://oauth2.googleapis.com/token",
     iat: now,
     exp: now + 3600,
@@ -49,8 +49,17 @@ async function getAccessToken(): Promise<string> {
   const payloadEncoded = base64UrlEncode(JSON.stringify(payload));
   const toSign = `${headerEncoded}.${payloadEncoded}`;
 
-  const keyData = sa.private_key.replace(/-----BEGIN PRIVATE KEY-----/, "").replace(/-----END PRIVATE KEY-----/, "").replace(/\s/g, "");
-  const keyBuffer = Buffer.from(keyData, "base64");
+  let keyPem = sa.private_key;
+  if (!keyPem.includes("-----BEGIN")) {
+    keyPem = "-----BEGIN PRIVATE KEY-----\n" + keyPem + "\n-----END PRIVATE KEY-----";
+  }
+  keyPem = keyPem.replace(/\\n/g, "\n");
+  
+  const keyData = keyPem
+    .replace(/-----BEGIN PRIVATE KEY-----/, "")
+    .replace(/-----END PRIVATE KEY-----/, "")
+    .replace(/\r?\n/g, "");
+  const keyBuffer = Uint8Array.from(Buffer.from(keyData, "base64"));
 
   const cryptoKey = await crypto.subtle.importKey(
     "pkcs8",
@@ -73,9 +82,11 @@ async function getAccessToken(): Promise<string> {
     }),
   });
 
-  const data = await response.json() as { access_token?: string; error?: string };
+  const data = await response.json() as { access_token?: string; error?: string; error_description?: string };
+  
   if (!data.access_token) {
-    throw new Error(data.error || "Failed to get access token");
+    console.error("Token error:", data);
+    throw new Error(data.error_description || data.error || "Failed to get access token");
   }
 
   return data.access_token;

@@ -19,7 +19,8 @@ const serviceAccount = {
 let cachedAuth: Auth.JWT | null = null;
 
 async function getAuth() {
-  console.log(process.env.GOOGLE_PRIVATE_KEY);
+  console.log("KEY EXISTS:", !!process.env.GOOGLE_PRIVATE_KEY);
+console.log("KEY LENGTH:", process.env.GOOGLE_PRIVATE_KEY?.length);
   if (cachedAuth) return cachedAuth;
 
   const auth = new google.auth.JWT({

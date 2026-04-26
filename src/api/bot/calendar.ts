@@ -19,7 +19,7 @@ const serviceAccount = {
 let cachedAuth: Auth.JWT | null = null;
 
 async function getAuth() {
-  console.log(process.env.PRIVATE_KEY);
+  console.log(process.env.GOOGLE_PRIVATE_KEY);
   if (cachedAuth) return cachedAuth;
 
   const auth = new google.auth.JWT({

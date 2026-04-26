@@ -19,15 +19,10 @@ const serviceAccount = {
 let cachedAuth: Auth.JWT | null = null;
 
 async function getAuth() {
-  console.log("KEY EXISTS:", !!process.env.GOOGLE_PRIVATE_KEY);
-console.log("KEY LENGTH:", process.env.GOOGLE_PRIVATE_KEY?.length);
   if (cachedAuth) return cachedAuth;
 
-  const auth = new google.auth.JWT({
-    email: serviceAccount.client_email,
-    key: serviceAccount.private_key,
-    scopes: SCOPES,
-  });
+  const auth = new (google.auth.JWT as any).fromJSON(serviceAccount);
+  auth.scopes = SCOPES;
   cachedAuth = auth;
   return auth;
 }

@@ -157,8 +157,8 @@ async function handleMessage(
       console.log("No text response, checking toolResults:", result.toolResults);
       if (result.toolResults && result.toolResults.length > 0) {
         const toolResult = result.toolResults[0] as any;
-        const res = toolResult?.result;
-        console.log("Tool result:", res);
+        const res = toolResult?.output || toolResult?.result;
+        console.log("Tool result (res):", res);
         if (res?.available === true) {
           responseText = `✅ ${res.message}`;
         } else if (res?.available === false) {

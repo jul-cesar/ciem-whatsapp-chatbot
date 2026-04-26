@@ -8,7 +8,9 @@
     "@vercel/functions": "^3.4.3",
     "ai": "^6.0.116",
     "chat": "^4.20.1",
-    "hono": "^4.12.7"
+    "googleapis": "^171.4.0",
+    "hono": "^4.12.7",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",

@@ -4,7 +4,7 @@ import { generateText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { bot } from "../bot/main.js";
 import { SYSTEM_PROMPT } from "../bot/system-prompt.js";
-import { checkAvailability, createAppointment } from "../bot/calendar.js";
+import { checkAvailability, createAppointment, getAuthUrl, setTokens, getTokens } from "../bot/calendar.js";
 import { z } from "zod";
 
 const MAX_HISTORY = 15;
@@ -165,4 +165,31 @@ webhooks.get("/whatsapp", async (c) => {
 webhooks.post("/whatsapp", async (c) => {
   await ensureInitialized();
   return bot.getAdapter("whatsapp").handleWebhook(c.req.raw, { waitUntil });
+});
+
+webhooks.get("/oauth", async (c) => {
+  return c.redirect(getAuthUrl());
+});
+
+webhooks.get("/oauth/callback", async (c) => {
+  const code = c.req.query("code");
+  if (!code) {
+    return c.html("<h1>Error: No code provided</h1>");
+  }
+  try {
+    await setTokens(code as string);
+    return c.html(`
+      <h1>Autorización exitosa!</h1>
+      <p>Tokens guardados en memoria.</p>
+      <p>Ahora el chatbot puede usar Google Calendar.</p>
+      <p><a href="/api/v1/webhooks/whatsapp/oauth/tokens">Ver tokens</a></p>
+    `);
+  } catch (error) {
+    return c.html(`<h1>Error: ${error}</h1>`);
+  }
+});
+
+webhooks.get("/oauth/tokens", async (c) => {
+  const tokens = getTokens();
+  return c.json(tokens);
 });

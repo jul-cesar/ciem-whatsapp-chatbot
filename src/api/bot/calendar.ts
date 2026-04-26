@@ -1,35 +1,18 @@
-import { Auth, google } from "googleapis";
+import { google } from "googleapis";
 
 const SCOPES = ["https://www.googleapis.com/auth/calendar"];
 
-const serviceAccount = {
-  type: "service_account",
-  project_id: process.env.GOOGLE_PROJECT_ID,
-  private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
-  private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-  client_email: process.env.GOOGLE_CLIENT_EMAIL,
-  client_id: process.env.GOOGLE_CLIENT_ID,
-  auth_uri: "https://accounts.google.com/o/oauth2/auth",
-  token_uri: "https://oauth2.googleapis.com/token",
-  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-  client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.GOOGLE_CLIENT_EMAIL}`,
-  universe_domain: "googleapis.com",
-};
+const oAuth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_REDIRECT_URI || "https://www.ciemcecar.xyz/api/auth/callback"
+);
 
-let cachedAuth: Auth.JWT | null = null;
-
-async function getAuth() {
-  if (cachedAuth) return cachedAuth;
-
-  const JWT = google.auth.JWT as any;
-  const auth = new JWT(
-    serviceAccount.client_email,
-    null,
-    serviceAccount.private_key,
-    SCOPES
-  );
-  cachedAuth = auth;
-  return auth;
+if (process.env.GOOGLE_ACCESS_TOKEN && process.env.GOOGLE_REFRESH_TOKEN) {
+  oAuth2Client.setCredentials({
+    access_token: process.env.GOOGLE_ACCESS_TOKEN,
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+  });
 }
 
 const CALENDAR_ID = "primary";
@@ -44,7 +27,7 @@ export async function checkAvailability(
   date: string
 ): Promise<{ slots: TimeSlot[]; error?: string }> {
   try {
-    const auth = await getAuth();
+    const auth = oAuth2Client;
     const calendar = google.calendar({ version: "v3", auth });
 
     const startOfDay = new Date(date);
@@ -113,7 +96,7 @@ export async function createAppointment(
   userEmail: string
 ): Promise<CreateAppointmentResult> {
   try {
-    const auth = await getAuth();
+    const auth = oAuth2Client;
     const calendar = google.calendar({ version: "v3", auth });
 
     const appointmentDateTime = new Date(`${date}T${time}:00`);
@@ -158,4 +141,24 @@ export async function createAppointment(
     console.error("Error creating appointment:", error);
     return { success: false, error: "Error al crear la cita" };
   }
+}
+
+let cachedTokens: any = null;
+
+export function getAuthUrl(): string {
+  return oAuth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: SCOPES,
+  });
+}
+
+export async function setTokens(code: string): Promise<any> {
+  const { tokens } = await oAuth2Client.getToken(code);
+  oAuth2Client.setCredentials(tokens);
+  cachedTokens = tokens;
+  return tokens;
+}
+
+export function getTokens() {
+  return cachedTokens;
 }

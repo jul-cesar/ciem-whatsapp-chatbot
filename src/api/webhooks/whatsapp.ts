@@ -147,7 +147,20 @@ async function handleMessage(
       tools,
     });
 
-    await thread.post(result.text);
+    let responseText = result.text;
+
+    if (!responseText || responseText.trim() === "") {
+      if (result.toolResults && result.toolResults.length > 0) {
+        const toolResult = result.toolResults[0] as any;
+        responseText = toolResult?.result?.message || toolResult?.result || "Solicitud procesada.";
+      }
+    }
+
+    if (!responseText || responseText.trim() === "") {
+      responseText = "He procesado tu solicitud. ¿Hay algo más en lo que pueda ayudarte?";
+    }
+
+    await thread.post(responseText);
   } catch (error) {
     console.error("Error procesando mensaje:", error);
     await thread.post(

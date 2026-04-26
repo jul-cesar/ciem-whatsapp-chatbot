@@ -26,8 +26,10 @@ async function getAuth() {
   const sa = getServiceAccount();
   if (!sa) throw new Error("Service account credentials not configured");
 
-  cachedAuth = (google.auth as any).JWT.fromJSON(sa);
-  cachedAuth.scopes = SCOPES;
+  const JWT = google.auth.JWT as any;
+  const jwt = new JWT(sa.client_email, null, sa.private_key, SCOPES);
+  await jwt.fetchMetadata();
+  cachedAuth = jwt;
   return cachedAuth;
 }
 

@@ -1,4 +1,4 @@
-import { google, Auth } from "googleapis";
+import { Auth, google } from "googleapis";
 
 const SCOPES = ["https://www.googleapis.com/auth/calendar"];
 
@@ -19,6 +19,7 @@ const serviceAccount = {
 let cachedAuth: Auth.JWT | null = null;
 
 async function getAuth() {
+  console.log(process.env.PRIVATE_KEY);
   if (cachedAuth) return cachedAuth;
 
   const auth = new google.auth.JWT({

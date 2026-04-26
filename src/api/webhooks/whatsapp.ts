@@ -36,7 +36,9 @@ const tools = {
         ),
     }),
     execute: async ({ date }) => {
+      console.log("checkAvailability called with date:", date);
       const result = await checkAvailability(date);
+      console.log("checkAvailability result:", result);
       if (result.error) {
         return { error: result.error };
       }
@@ -79,7 +81,9 @@ const tools = {
         .describe("Correo electrónico del usuario"),
     }),
     execute: async ({ date, time, userName, userEmail }) => {
+      console.log("createAppointment called:", { date, time, userName, userEmail });
       const result = await createAppointment(date, time, userName, userEmail);
+      console.log("createAppointment result:", result);
       if (!result.success) {
         return { success: false, error: result.error };
       }
@@ -150,9 +154,22 @@ async function handleMessage(
     let responseText = result.text;
 
     if (!responseText || responseText.trim() === "") {
+      console.log("No text response, checking toolResults:", result.toolResults);
       if (result.toolResults && result.toolResults.length > 0) {
         const toolResult = result.toolResults[0] as any;
-        responseText = toolResult?.result?.message || toolResult?.result || "Solicitud procesada.";
+        const res = toolResult?.result;
+        console.log("Tool result:", res);
+        if (res?.available === true) {
+          responseText = `✅ ${res.message}`;
+        } else if (res?.available === false) {
+          responseText = `😕 ${res.message || "No hay horarios disponibles para esa fecha."}`;
+        } else if (res?.success === true) {
+          responseText = `✅ ${res.message}`;
+        } else if (res?.error) {
+          responseText = `❌ Error: ${res.error}`;
+        } else {
+          responseText = "He procesado tu solicitud. ¿Hay algo más en lo que pueda ayudarte?";
+        }
       }
     }
 

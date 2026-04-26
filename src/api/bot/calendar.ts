@@ -9,6 +9,9 @@ let cachedAuth: any = null;
 async function getAuth() {
   if (cachedAuth) return cachedAuth;
 
+  console.log("Getting auth with GOOGLE_CLIENT_EMAIL:", process.env.GOOGLE_CLIENT_EMAIL ? "set" : "NOT SET");
+  console.log("GOOGLE_PRIVATE_KEY:", process.env.GOOGLE_PRIVATE_KEY ? "set" : "NOT SET");
+
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -18,6 +21,7 @@ async function getAuth() {
   });
 
   cachedAuth = await auth.getClient(); // 🔥 clave
+  console.log("Auth obtained successfully");
   return cachedAuth;
 }
 

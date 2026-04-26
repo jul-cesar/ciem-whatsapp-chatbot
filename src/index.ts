@@ -1,36 +1,11 @@
 import { Hono } from 'hono';
 import { routes } from './api/routes/routes.js';
 import { webhooks } from './api/webhooks/whatsapp.js';
-import { getAuthUrl, setTokens, getTokens } from './api/bot/calendar.js';
-
-process.env.NODE_OPTIONS = '--openssl-legacy-provider';
 
 const app = new Hono()
 
 app.route('/api/v1', routes)
 app.route('/api/webhooks', webhooks)
-
-app.get('/api/auth', async (c) => {
-  return c.redirect(getAuthUrl());
-});
-
-app.get('/api/auth/callback', async (c) => {
-  const code = c.req.query("code");
-  if (!code) {
-    return c.html("<h1>Error: No code provided</h1>");
-  }
-  try {
-    const tokens = await setTokens(code as string);
-    return c.html(`
-      <h1>Autorización exitosa!</h1>
-      <p>Tokens guardados en memoria.</p>
-      <p>Ahora el chatbot puede usar Google Calendar.</p>
-      <pre>${JSON.stringify(tokens, null, 2)}</pre>
-    `);
-  } catch (error) {
-    return c.html(`<h1>Error: ${error}</h1>`);
-  }
-});
 
 app.get('/privacy-policy', (c) => {
   return c.html(`<!doctype html>
@@ -69,7 +44,5 @@ app.get('/privacy-policy', (c) => {
 </html>`)
 })
   
-
-
 
 export default app

@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { routes } from './api/routes/routes.js';
 import { webhooks } from './api/webhooks/whatsapp.js';
 
+process.env.NODE_OPTIONS = '--openssl-legacy-provider';
 
 const app = new Hono()
 

@@ -21,8 +21,13 @@ let cachedAuth: Auth.JWT | null = null;
 async function getAuth() {
   if (cachedAuth) return cachedAuth;
 
-  const auth = new (google.auth.JWT as any).fromJSON(serviceAccount);
-  auth.scopes = SCOPES;
+  const JWT = google.auth.JWT as any;
+  const auth = new JWT(
+    serviceAccount.client_email,
+    null,
+    serviceAccount.private_key,
+    SCOPES
+  );
   cachedAuth = auth;
   return auth;
 }

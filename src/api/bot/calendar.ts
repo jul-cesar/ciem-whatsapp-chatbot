@@ -25,7 +25,7 @@ async function getAuth() {
   return cachedAuth;
 }
 
-const CALENDAR_ID = "c_4210e14b7bfc1c444af99e320ff7ba3e89a999e12ce900728933c45eedea909c@group.calendar.google.com";
+const CALENDAR_ID = "https://github.com/jul-cesar/ciem-whatsapp-chatbot.git";
 
 export interface TimeSlot {
   start: string;

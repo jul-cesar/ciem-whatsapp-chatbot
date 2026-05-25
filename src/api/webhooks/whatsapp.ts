@@ -9,17 +9,6 @@ import { z } from "zod";
 
 const MAX_HISTORY = 15;
 
-const WELCOME_MESSAGE = `¡Hola! 👋 Soy el asistente virtual del CIEM de CECAR.
-
-Estoy aquí para ayudarte con:
-📋 Información sobre el proceso de emprendimiento
-📄 Formulación de planes de negocio
-🎓 Opción de grado en emprendimiento
-📝 Pre-inscripción al CIEM
-📅 Agendar citas de atención
-
-¿En qué te puedo ayudar hoy?`;
-
 const UNSUPPORTED_MESSAGE = `Por el momento solo puedo responder mensajes de texto 😊
 
 Si tienes una consulta, escríbela y con gusto te ayudo.`;
@@ -137,10 +126,6 @@ async function handleMessage(
     }
 
     const history = allMessages.reverse().slice(-MAX_HISTORY);
-
-    if (history.length === 0) {
-      await thread.post(WELCOME_MESSAGE);
-    }
 
     history.push({ role: "user", content: message.text });
 

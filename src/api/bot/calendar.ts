@@ -25,7 +25,7 @@ async function getAuth() {
   return cachedAuth;
 }
 
-const CALENDAR_ID = "6c2bd29a513a10f690ae714babcceee93371289d2b6fe3381862520ac52aef12@group.calendar.google.com";
+const CALENDAR_ID = "c_db99d21d4cc90769a303f0fa7b4ef7d5a8cf55cfa7b1ef4ebe82238fcf2b95f4@group.calendar.google.com";
 
 export interface TimeSlot {
   start: string;

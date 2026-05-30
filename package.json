@@ -1,7 +1,12 @@
 {
   "name": "hono",
   "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
   "dependencies": {
+    "@hono/node-server": "^1.13.0",
     "@ai-sdk/openai": "^3.0.41",
     "@chat-adapter/state-pg": "^4.20.1",
     "@chat-adapter/whatsapp": "^4.20.1",

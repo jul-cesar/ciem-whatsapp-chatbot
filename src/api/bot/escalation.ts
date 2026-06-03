@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-const COORDINATOR_EMAIL = process.env.COORDINATOR_EMAIL || "centroemprendimiento@cecar.edu.co";
+const COORDINATOR_EMAIL = process.env.COORDINATOR_EMAIL || "alex.betin@cecar.edu.co";
 const SENDER_EMAIL = process.env.SENDER_EMAIL || "onboarding@resend.dev";
 
 let resend: Resend | null = null;

@@ -6,15 +6,16 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
-    "@hono/node-server": "^1.13.0",
     "@ai-sdk/openai": "^3.0.41",
     "@chat-adapter/state-pg": "^4.20.1",
     "@chat-adapter/whatsapp": "^4.20.1",
+    "@hono/node-server": "^1.13.0",
     "@vercel/functions": "^3.4.3",
     "ai": "^6.0.116",
     "chat": "^4.20.1",
     "googleapis": "^171.4.0",
     "hono": "^4.12.7",
+    "resend": "^6.12.4",
     "zod": "^4.3.6"
   },
   "devDependencies": {

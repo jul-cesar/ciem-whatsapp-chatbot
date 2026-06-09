@@ -5,6 +5,7 @@ import { openai } from "@ai-sdk/openai";
 import { bot } from "../bot/main.js";
 import { SYSTEM_PROMPT } from "../bot/system-prompt.js";
 import { checkAvailability, createAppointment } from "../bot/calendar.js";
+import { sendEscalation } from "../bot/escalation.js";
 import { z } from "zod";
 
 const MAX_HISTORY = 15;
@@ -83,6 +84,28 @@ const tools = {
       };
     },
   }),
+  escalateToCoordinator: tool({
+    description:
+      "Escala una consulta al Coordinador del CIEM cuando el bot no puede responderla o el usuario necesita atención personalizada. Se usa DESPUÉS de obtener el nombre, correo y teléfono del usuario.",
+    inputSchema: z.object({
+      userName: z.string().describe("Nombre completo del usuario"),
+      userEmail: z.string().describe("Correo electrónico institucional del usuario (@cecar.edu.co)"),
+      userPhone: z.string().describe("Número de teléfono de WhatsApp del usuario"),
+      summary: z.string().describe("Resumen breve de la consulta o motivo del escalamiento"),
+    }),
+    execute: async ({ userName, userEmail, userPhone, summary }) => {
+      console.log("escalateToCoordinator called:", { userName, userEmail, userPhone, summary });
+      const result = await sendEscalation({ userName, userEmail, userPhone, summary });
+      console.log("escalateToCoordinator result:", result);
+      if (!result.success) {
+        return { success: false, error: result.error };
+      }
+      return {
+        success: true,
+        message: `✅ Tu solicitud ha sido registrada exitosamente. El Coordinador del CIEM te responderá al correo ${userEmail} en menos de 24 horas hábiles.`,
+      };
+    },
+  }),
 };
 
 let initialized = false;
@@ -149,7 +172,7 @@ async function handleMessage(
         } else if (res?.available === false) {
           responseText = `😕 ${res.message || "No hay horarios disponibles para esa fecha."}`;
         } else if (res?.success === true) {
-          responseText = `✅ ${res.message}`;
+          responseText = res.message;
         } else if (res?.error) {
           responseText = `❌ Error: ${res.error}`;
         } else {
